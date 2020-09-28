@@ -61,7 +61,7 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
     }
 
     if (state == AppLifecycleState.paused &&
-        (!this._isPaused && this._didUnlockForAppLaunch)) {
+        (!this._isPaused && this._didUnlockForAppLaunch && this._enabled)) {
       this.showLockScreen();
     }
 
