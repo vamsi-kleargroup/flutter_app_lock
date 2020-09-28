@@ -127,16 +127,16 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
 
   /// Makes sure that [AppLock] shows the [lockScreen] on subsequent app pauses.
   void enable() {
-    setState(() {
-      this._enabled = true;
-    });
+    // setState(() {
+    this._enabled = true;
+    // });
   }
 
   /// Makes sure that [AppLock] doesn't show the [lockScreen] on subsequent app pauses.
   void disable() {
-    setState(() {
-      this._enabled = false;
-    });
+    // setState(() {
+    this._enabled = false;
+    // });
   }
 
   /// Manually show the [lockScreen].
