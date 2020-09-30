@@ -47,27 +47,27 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
-
     this._didUnlockForAppLaunch = !this.widget.enabled;
     this._isPaused = false;
     this._enabled = this.widget.enabled;
+    print('from plugin $_enabled');
 
     super.initState();
   }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (!this._enabled) {
-      return;
-    }
+  // @override
+  // void didChangeAppLifecycleState(AppLifecycleState state) {
+  //   if (!this._enabled) {
+  //     return;
+  //   }
 
-    if (state == AppLifecycleState.paused &&
-        (!this._isPaused && this._didUnlockForAppLaunch && this._enabled)) {
-      this.showLockScreen();
-    }
+  //   if (state == AppLifecycleState.paused &&
+  //       (!this._isPaused && this._didUnlockForAppLaunch && this._enabled)) {
+  //     this.showLockScreen();
+  //   }
 
-    super.didChangeAppLifecycleState(state);
-  }
+  //   super.didChangeAppLifecycleState(state);
+  // }
 
   @override
   void dispose() {
@@ -78,11 +78,13 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    print('from plugin ${widget.enabled ? "lock screen" : "buildeer screen"}');
     return _ApplockInheritedWidget(
       appLockState: this,
       child: MaterialApp(
-        home:
-            this.widget.enabled ? this._lockScreen : this.widget.builder(null),
+        home: this.widget.enabled
+            ? this._lockScreen
+            : this.widget.builder(context),
         navigatorKey: _navigatorKey,
         routes: {
           '/lock-screen': (context) => this._lockScreen,
@@ -108,11 +110,11 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
   /// when built. Use this when you want to inject objects created from the
   /// [lockScreen] in to the rest of your app so you can better guarantee that some
   /// objects, services or databases are already instantiated before using them.
-  void didUnlock([Object args]) {
+  void didUnlock() {
     if (this._didUnlockForAppLaunch) {
       this._didUnlockOnAppPaused();
     } else {
-      this._didUnlockOnAppLaunch(args);
+      this._didUnlockOnAppLaunch();
     }
   }
 
@@ -124,8 +126,12 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
   /// on [enabled].
   void setEnabled(bool enabled) {
     if (enabled) {
+      print('from plugin enabled');
+
       this.enable();
     } else {
+      print('from plugin disabled');
+
       this.disable();
     }
   }
@@ -150,13 +156,15 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
     return _navigatorKey.currentState.pushNamed('/lock-screen');
   }
 
-  void _didUnlockOnAppLaunch(Object args) {
+  void _didUnlockOnAppLaunch() {
+    print('from plugin unlock on app launch');
     this._didUnlockForAppLaunch = true;
-    _navigatorKey.currentState
-        .pushReplacementNamed('/unlocked', arguments: args);
+    _navigatorKey.currentState.pushReplacementNamed('/unlocked');
   }
 
   void _didUnlockOnAppPaused() {
+    print('from plugin unlock on app pause');
+
     this._isPaused = false;
     _navigatorKey.currentState.pop();
   }
