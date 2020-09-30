@@ -18,7 +18,7 @@ import 'package:flutter/material.dart';
 /// `AppLock.of(context).disable();` or the convenience method `AppLock.of(context).setEnabled(enabled);`
 /// using a bool argument.
 class AppLock extends StatefulWidget {
-  final Widget Function(Object) builder;
+  final WidgetBuilder builder;
   final Widget lockScreen;
   final bool enabled;
 
@@ -86,8 +86,8 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
         navigatorKey: _navigatorKey,
         routes: {
           '/lock-screen': (context) => this._lockScreen,
-          '/unlocked': (context) =>
-              this.widget.builder(ModalRoute.of(context).settings.arguments)
+          '/unlocked': (context) => this.widget.builder(context)
+          // this.widget.builder(Mod'alRoute.of(context).settings.arguments)
         },
       ),
     );
