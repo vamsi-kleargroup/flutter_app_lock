@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 /// A widget which handles app lifecycle events for showing and hiding a lock screen.
 /// This should wrap around a `MyApp` widget (or equivalent).
@@ -41,33 +42,17 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
   static final GlobalKey<NavigatorState> _navigatorKey = GlobalKey();
 
   bool _didUnlockForAppLaunch;
-  bool _isPaused;
   bool _enabled;
 
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
     this._didUnlockForAppLaunch = !this.widget.enabled;
-    this._isPaused = false;
     this._enabled = this.widget.enabled;
     print('from plugin $_enabled');
 
     super.initState();
   }
-
-  // @override
-  // void didChangeAppLifecycleState(AppLifecycleState state) {
-  //   if (!this._enabled) {
-  //     return;
-  //   }
-
-  //   if (state == AppLifecycleState.paused &&
-  //       (!this._isPaused && this._didUnlockForAppLaunch && this._enabled)) {
-  //     this.showLockScreen();
-  //   }
-
-  //   super.didChangeAppLifecycleState(state);
-  // }
 
   @override
   void dispose() {
@@ -78,7 +63,6 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    print('from plugin ${widget.enabled ? "lock screen" : "buildeer screen"}');
     return _ApplockInheritedWidget(
       appLockState: this,
       child: MaterialApp(
@@ -98,7 +82,7 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
   Widget get _lockScreen {
     return WillPopScope(
       child: this.widget.lockScreen,
-      onWillPop: () => Future.value(false),
+      onWillPop: () => SystemNavigator.pop(),
     );
   }
 
@@ -126,12 +110,8 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
   /// on [enabled].
   void setEnabled(bool enabled) {
     if (enabled) {
-      print('from plugin enabled');
-
       this.enable();
     } else {
-      print('from plugin disabled');
-
       this.disable();
     }
   }
@@ -152,20 +132,15 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
 
   /// Manually show the [lockScreen].
   Future<void> showLockScreen() {
-    this._isPaused = true;
     return _navigatorKey.currentState.pushNamed('/lock-screen');
   }
 
   void _didUnlockOnAppLaunch() {
-    print('from plugin unlock on app launch');
     this._didUnlockForAppLaunch = true;
     _navigatorKey.currentState.pushReplacementNamed('/unlocked');
   }
 
   void _didUnlockOnAppPaused() {
-    print('from plugin unlock on app pause');
-
-    this._isPaused = false;
     _navigatorKey.currentState.pop();
   }
 }
